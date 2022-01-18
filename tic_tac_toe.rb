@@ -1,7 +1,4 @@
-# create winning pattern in the game class
-# create a method that will loop player's choice until winning_pattern=true
-# create a method in game class to fill up the board with a parameter of the player choice
-# create set_value in board to be able to put O and X according to the coordinates
+# frozen_string_literal: true
 
 # This class layouts the board of tic-tac-toe
 class Board
