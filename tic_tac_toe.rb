@@ -46,7 +46,7 @@ class Board
   public
 
   def show_board
-    @board.map { |e| puts e.join('') }
+    @board.map { |e| puts "  #{e.join('')}" }
   end
 end
 
