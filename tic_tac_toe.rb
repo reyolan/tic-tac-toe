@@ -65,11 +65,12 @@ end
 # This class contains methods when starting a game of tic-tac-toe
 class Game
   attr_reader :player_one, :player_two, :board
-  attr_accessor :coordinates
+  attr_accessor :coordinates, :board_coordinates
 
   def initialize
     @board = Board.new
     @coordinates = %w[a1 a2 a3 b1 b2 b3 c1 c2 c3]
+    @board_coordinates = {}
     start_game
   end
 
@@ -96,46 +97,35 @@ class Game
     @player_two = Player.new(gets.chomp, 'O')
   end
 
+  def initialize_board_coordinates_input(row_label, board_row)
+    until row_label == 'd'
+      column_label = board_column = 1
+      until column_label == 4
+        board_coordinates["#{row_label}#{column_label}".to_sym] = "#{board_row}#{board_column}"
+        column_label += 1
+        board_column += 2
+      end
+      row_label = row_label.next
+      board_row += 2
+    end
+  end
+
   def player_put_input(player)
     puts ''
     print "#{player.name}'s turn: "
-    puts 'Invalid input or non-occupiable, put the right coordinates.' until coordinates.any?(player.turn = gets.chomp)
-    coordinates.delete(player.turn)
+    until board_coordinates.key?(player.turn = gets.chomp.to_sym)
+      print 'Invalid input or non-occupiable, put the right coordinates: '
+    end
     fill_board(player.turn, player.weapon)
+    board_coordinates.delete(player.turn)
   end
 
   def fill_board(turn, weapon)
     puts ''
-    case turn[0]
-    when 'a' then fill_board_a(turn, weapon)
-    when 'b' then fill_board_b(turn, weapon)
-    when 'c' then fill_board_c(turn, weapon)
-    end
+    row = board_coordinates[turn][0]
+    column = board_coordinates[turn][1]
+    board.board[row.to_i][column.to_i] = weapon
     board.show_board
-  end
-
-  def fill_board_a(turn, weapon)
-    case turn
-    when 'a1' then board.board[2][1] = weapon
-    when 'a2' then board.board[2][3] = weapon
-    when 'a3' then board.board[2][5] = weapon
-    end
-  end
-
-  def fill_board_b(turn, weapon)
-    case turn
-    when 'b1' then board.board[4][1] = weapon
-    when 'b2' then board.board[4][3] = weapon
-    when 'b3' then board.board[4][5] = weapon
-    end
-  end
-
-  def fill_board_c(turn, weapon)
-    case turn
-    when 'c1' then board.board[6][1] = weapon
-    when 'c2' then board.board[6][3] = weapon
-    when 'c3' then board.board[6][5] = weapon
-    end
   end
 
   def player_turn
@@ -180,6 +170,7 @@ class Game
     board.show_board
     show_instruction
     input_name
+    initialize_board_coordinates_input('a', 2)
     player_turn
   end
 end
